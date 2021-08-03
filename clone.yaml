@@ -1,0 +1,24 @@
+---
+- name: Create a VM from a template
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+  - name: Clone the template
+    vmware_guest:
+      hostname: havsphere.ciena.com
+      username: risarma-a
+      password: !vault |
+                $ANSIBLE_VAULT;1.1;AES256
+                35656138616264633636373638326366313731356635303934316464313164373461643163343739
+                6238343730353631633231666633653732656264336531300a393931336362343139663961313933
+                34353539613434356534323333663263333430313666333535643234313837623934663464333365
+                6362363037353863360a613361383130616538323865333131643431316463663862353663616430
+                3539
+      validate_certs: False
+      name: testvm_100
+      template: PNSW_OL7.9 clone( golden image)
+      datacenter: Datacenter-Unitech-Corp
+      folder: Cluster-03-Unix-02 (PNSW)
+      state: poweredon
+      wait_for_ip_address: yes

@@ -1,0 +1,32 @@
+---
+
+- name: Find folder path of an existing virtual machine
+  hosts: localhost
+  gather_facts: False
+  vars:
+   ansible_python_interpreter: "/usr/bin/env python3"
+   vcenter_server: 10.120.240.19
+   vcenter_user: risarma-a
+   vcenter_pass: !vault |
+                 $ANSIBLE_VAULT;1.1;AES256
+                 66336430323836643939656539353062663266643137643935323037376637343761393839333638
+                 3763303863643437323235663364396563393339653635620a636430316337663263613637613162
+                 64393733323430396533336665656633346537613230356638646635313862616538643831323862
+                 3161323162633433300a346565643330303166313861616638393866663438633933306264656430
+                 3330
+  tasks:
+   - set_fact: 
+      vm_name: "haxv-jikumar-2.ciena.com"
+   - name: "Find folder for VM - {{ vm_name }}"
+     vmware_guest_find:
+      hostname: "{{ vcenter_server }}"
+      username: "{{ vcenter_user }}"
+      password: "{{ vcenter_pass }}"
+      validate_certs: False
+      name: "{{ vm_name }}"
+     delegate_to: localhost
+     register: vm_facts
+   - debug: 
+      msg: "The values are: '{{ item.key }}' and '{{ item.value }}'"
+     loop: "{{ lookup('dict', vm_facts) }}" 
+   
